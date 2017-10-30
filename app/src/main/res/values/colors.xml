@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimaryLight">#84FF19</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorDivider">#2FE897</color>
+    <color name="colorBorder">#a7a4a4</color>
+    <color name="colorExtra">#fffac1</color>
+    <color name="orangered">#FF4500</color><!--红橙色 -->
+    <color name="light_gray">#AAADBB</color>
+    <color name="dark_night">#0a0f14</color>
+    <color name="dark_blue">#007a8c</color>
+    <color name="themeColor_one">#3a376e</color>
+    <color name="themeColor_two">#e885b4</color>
+    <color name="themeColor_default">#ffffff</color>
+    <color name="hard_color">#48495f</color>
+    <color name="card_bg">#FFFFFF</color>
+</resources>

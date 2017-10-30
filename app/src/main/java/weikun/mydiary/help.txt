@@ -1,0 +1,41 @@
+Toolbar的常用方法
+
+setLogo : 设置工具栏图标。
+setTitle : 设置标题文字。
+setTitleTextAppearance : 设置标题的文字风格。
+setTitleTextColor : 设置标题的文字颜色。
+setSubtitle : 设置副标题文字。副标题在标题下方。
+setSubtitleTextAppearance : 设置副标题的文字风格。
+setSubtitleTextColor : 设置副标题的文字颜色。
+setNavigationIcon : 设置导航图标。导航图标在工具栏图标左边。
+setNavigationOnClickListener : 设置导航图标的点击监听器。
+setOverflowIcon : 设置溢出菜单的按钮图标。
+showOverflowMenu : 显示溢出菜单图标。
+hideOverflowMenu : 隐藏溢出菜单图标。
+dismissPopupMenus : 关闭已弹出的菜单。
+
+BottomNavigationView
+
+android:background
+整个BottomNavigationView 的背景色，设置背景色之后，切换选项时依旧会有水波纹效果（设置背景色也是为了将底部导航和上方的内容进行分割区分）
+app:itemBackground
+条目的背景色。设置之后在切换选项时将无法看到水波纹效果
+app:itemIconTint
+条目图标的颜色。可以是单一颜色，也可以是颜色selector。通常建议设置selector，当未选中时指定一种颜色，选中时再指定另一种颜色。该selector 定义在 res -- color 目录下。（未设置该属性时，默认未选中状态为深灰色，选中状态时的颜色为当前主题的 colorPrimary 颜色）
+itemTextColor
+条目文本的颜色。可以是单一颜色，也可以是颜色selector。通常建议设置selector，当未选中时指定一种颜色，选中时再指定另一种颜色。该selector 定义在 res -- color 目录下。未设置该属性时，默认未选中状态为深灰色，选中状态时的颜色为当前主题的 colorPrimary 颜色）
+app:menu
+当前BottomNavigationView 所引用的menu 菜单。
+setOnNavigationItemSelectedListener（）
+设置导航条目被选中时的监听器
+getMenu( )
+获取当前BottomNavigationView 中所引用的 menu 菜单对象
+
+/**设置MenuItem的字体颜色**/
+NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+navigationView.setNavigationItemSelectedListener(this);
+Resources resource=(Resources)getBaseContext().getResources();
+ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.navigation_menu_item_color);
+navigationView.setItemTextColor(csl);
+/**设置MenuItem默认选中项**/
+navigationView.getMenu().getItem(0).setChecked(true);
