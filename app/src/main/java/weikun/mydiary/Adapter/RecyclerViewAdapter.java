@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import weikun.mydiary.Activity.DiaryActivity;
 import weikun.mydiary.R;
 
 
@@ -34,9 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "你点击了卡片" + position, Toast.LENGTH_SHORT).show();
-                //Intent intent = new Intent(v.getContext(), Course_Details.class);
-                //v.getContext().startActivity(intent);
+                v.getContext().startActivity(new Intent(v.getContext(), DiaryActivity.class));
             }
         });//卡片点击事件
     }
