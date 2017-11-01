@@ -71,6 +71,7 @@ public class DiaryActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+        getImage();
     }
 
     @Override

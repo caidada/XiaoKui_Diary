@@ -19,4 +19,8 @@
     <color name="themeColor_default">#ffffff</color>
     <color name="hard_color">#48495f</color>
     <color name="card_bg">#FFFFFF</color>
+    <color name="QI_main_black">#1A1A1A</color>
+    <color name="QI_main_white">#BFBFBF</color>
+    <color name="QI_main_two_white">#999999</color>
+    <color name="QI_background_black">#0A0F13</color>
 </resources>

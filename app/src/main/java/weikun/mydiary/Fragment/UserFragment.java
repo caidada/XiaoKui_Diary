@@ -4,14 +4,19 @@ package weikun.mydiary.Fragment;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import weikun.mydiary.Activity.user_drafts;
 import weikun.mydiary.R;
 
 /**
@@ -21,6 +26,8 @@ import weikun.mydiary.R;
 public class UserFragment extends Fragment{
 
     protected Activity mActivity;
+    @Bind(R.id.draft_layout)
+    RelativeLayout draftLayout;
 
     public UserFragment() {
     }
@@ -50,5 +57,10 @@ public class UserFragment extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @OnClick(R.id.draft_layout)
+    public void onViewClicked() {
+        startActivity(new Intent(getContext(),user_drafts.class));
     }
 }

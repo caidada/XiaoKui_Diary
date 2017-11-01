@@ -30,6 +30,7 @@
             android:label="@string/title_activity_diary"
             android:theme="@style/AppTheme" />
         <activity android:name=".Activity.SocialDiary"></activity>
+        <activity android:name=".Activity.user_drafts"></activity>
     </application>
 
 </manifest>
