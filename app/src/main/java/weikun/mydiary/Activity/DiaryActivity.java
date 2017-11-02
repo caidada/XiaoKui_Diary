@@ -1,40 +1,63 @@
 package weikun.mydiary.Activity;
 
-import android.content.ContentResolver;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sendtion.xrichtext.RichTextView;
+import com.sendtion.xrichtext.SDCardUtil;
 
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import weikun.mydiary.R;
+import weikun.mydiary.Util.CommonUtil;
+import weikun.mydiary.Util.StringUtils;
+import weikun.mydiary.db.Group;
+import weikun.mydiary.db.GroupDao;
+import weikun.mydiary.db.Note;
+import weikun.mydiary.db.NoteDao;
 
-public class DiaryActivity extends AppCompatActivity {
+public class DiaryActivity extends BaseActivity {
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
     @Bind(R.id.fab)
     FloatingActionButton fab;
-    Bitmap bitmap;
+    @Bind(R.id.tv_note_title)
+    TextView View_Title;//标题
+    @Bind(R.id.tv_note_time)
+    TextView View_Time;;//创建时间
+    @Bind(R.id.tv_note_group)
+    TextView View_Group;//选择分类
+    @Bind(R.id.tv_note_content)
+    RichTextView View_Diary;//笔记内容
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    private ProgressDialog loadingDialog;
+    private Subscription subsLoading;
+    private Note note;//对象
+    private String myTitle;
+    private String myContent;
+    private String myGroupName;
+    private NoteDao noteDao;
+    private GroupDao groupDao;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +68,9 @@ public class DiaryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        InitView();
     }
 
-    //左上返回
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     //返回键
     @Override
@@ -71,100 +86,140 @@ public class DiaryActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-        getImage();
+    }
+
+    private void InitView(){
+        noteDao = new NoteDao(this);
+        groupDao = new GroupDao(this);
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setMessage("数据加载中...");
+        loadingDialog.setCanceledOnTouchOutside(false);
+        View_Title.setTextIsSelectable(true);
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("data");
+        note = (Note) bundle.getSerializable("note");
+        myTitle = note.getTitle();
+        myContent = note.getContent();
+        Group group = groupDao.queryGroupById(note.getGroupId());
+        myGroupName = group.getName();
+        View_Title.setText(myTitle);
+        View_Diary.post(new Runnable() {
+            @Override
+            public void run() {
+                View_Diary.clearAllLayout();
+                showDataSync(myContent);
+            }
+        });
+        View_Time.setText(note.getCreateTime());
+        View_Group.setText(myGroupName);
+        setTitle("日记详情");
+    }
+
+    /**
+     * 异步方式显示数据
+     * @param html
+     */
+    private void showDataSync(final String html){
+        loadingDialog.show();
+
+        subsLoading = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                showEditData(subscriber, html);
+            }
+        })
+                .onBackpressureBuffer()
+                .subscribeOn(Schedulers.io())//生产事件在io
+                .observeOn(AndroidSchedulers.mainThread())//消费事件在UI线程
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                        loadingDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingDialog.dismiss();
+                        e.printStackTrace();
+                        showToast("解析错误：图片不存在或已损坏");
+                    }
+
+                    @Override
+                    public void onNext(String text) {
+                        if (text.contains(SDCardUtil.getPictureDir())){
+                            View_Diary.addImageViewAtIndex(View_Diary.getLastIndex(), text);
+                        } else {
+                            View_Diary.addTextViewAtIndex(View_Diary.getLastIndex(), text);
+                        }
+                    }
+                });
+
+    }
+    /**
+     * 显示数据
+     * @param html
+     */
+    private void showEditData(Subscriber<? super String> subscriber, String html) {
+        try {
+            List<String> textList = StringUtils.cutStringByImgTag(html);
+            for (int i = 0; i < textList.size(); i++) {
+                String text = textList.get(i);
+                if (text.contains("<img") && text.contains("src=")) {
+                    String imagePath = StringUtils.getImgSrc(text);
+                    if (new File(imagePath).exists()) {
+                        subscriber.onNext(imagePath);
+                    } else {
+                        showToast("图片"+1+"已丢失，请重新插入！");
+                    }
+                } else {
+                    subscriber.onNext(text);
+                }
+            }
+            subscriber.onCompleted();
+        } catch (Exception e){
+            e.printStackTrace();
+            subscriber.onError(e);
+        }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.view_diary, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_note_edit://编辑笔记
+                Intent intent = new Intent(DiaryActivity.this, DiaryEditActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("note", note);
+                intent.putExtra("data", bundle);
+                intent.putExtra("flag", 1);//编辑笔记
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.action_note_share://分享笔记
+                CommonUtil.shareTextAndImage(this, note.getTitle(), note.getContent(), null);//分享图文
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 0) {
-            ContentResolver resolver = getContentResolver();
-            // 获得图片的uri
-            Uri originalUri = data.getData();
-            bitmap = null;
-            try {
-                Bitmap originalBitmap = BitmapFactory.decodeStream(resolver.openInputStream(originalUri));
-               // bitmap = ImageUtils.resizeImage(originalBitmap, 600);
-                // 将原始图片的bitmap转换为文件
-                // 上传该文件并获取url
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //insertPic(bitmap, 0);
-                    }
-                }).start();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-        }
+    protected void onResume() {
+        super.onResume();
     }
-    /**
-     * 图文详情页面选择图片
-     */
-    public void getImage() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        startActivityForResult(intent, 0);
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
-    /**
-     * 插入图片
-     */
-    /*private void insertPic(Bitmap bm, final int index) {
-        AjaxParams params = new AjaxParams();
-        try {
-            params.put("image", LeoUtils.saveBitmap(bm));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        FinalHttp fh = new FinalHttp();
-        System.out.println("params=" + params.toString());
-        fh.post(HttpUrlConstant.UPLOAD_PIC, params, new AjaxCallBack<Object>() {
-            @Override
-            public void onFailure(Throwable t, int errorNo, String strMsg) {
-                super.onFailure(t, errorNo, strMsg);
-                ToastUtil.show(getApplicationContext(), "图片上传失败，请检查网络")；
-            }
 
-            @Override
-            public void onSuccess(Object t) {
-                super.onSuccess(t);
-                System.out.println(t.toString());
-                try {
-                    JSONObject jsonObject = new JSONObject(t.toString());
-                    String url = jsonObject.getString("recordName");
-                    switch (index) {
-
-                        case 0:
-                            // 根据Bitmap对象创建ImageSpan对象
-                            ImageSpan imageSpan = new ImageSpan(CreateMeetingActivity.this, bitmap);
-                            // 创建一个SpannableString对象，以便插入用ImageSpan对象封装的图像
-                            String tempUrl = "<img src=\"" + url + "\" />";
-                            SpannableString spannableString = new SpannableString(tempUrl);
-                            // 用ImageSpan对象替换你指定的字符串
-                            spannableString.setSpan(imageSpan, 0, tempUrl.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            // 将选择的图片追加到EditText中光标所在位置
-                            int index = et_detail.getSelectionStart(); // 获取光标所在位置
-                            Editable edit_text = et_detail.getEditableText();
-                            if (index < 0 || index >= edit_text.length()) {
-                                edit_text.append(spannableString);
-                            } else {
-                                edit_text.insert(index, spannableString);
-                            }
-                            System.out.println("插入的图片：" + spannableString.toString());
-
-                            break;
-
-                        case 1:
-                            // 与本案例无关的代码
-                            break;
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-    }*/
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

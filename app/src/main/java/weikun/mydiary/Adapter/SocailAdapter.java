@@ -47,9 +47,6 @@ public class SocailAdapter extends BaseQuickAdapter<Status, BaseViewHolder> {
         ((TextView) helper.getView(R.id.tweetText)).setFocusable(false);
         ((TextView) helper.getView(R.id.tweetText)).setClickable(false);
         ((TextView) helper.getView(R.id.tweetText)).setLongClickable(false);*/
-        ((TextView) helper.getView(R.id.tweetName)).setText("我是日记标题");
-        ((TextView) helper.getView(R.id.tweetDate)).setText("我是日记日期");
-        ((TextView) helper.getView(R.id.tweetText)).setText("我是日记内容");
 
     }
 }

@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="weikun.mydiary">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -29,8 +32,19 @@
             android:name=".Activity.DiaryActivity"
             android:label="@string/title_activity_diary"
             android:theme="@style/AppTheme" />
-        <activity android:name=".Activity.SocialDiary"></activity>
-        <activity android:name=".Activity.user_drafts"></activity>
+        <activity android:name=".Activity.SocialDiary" />
+        <activity android:name=".Activity.user_drafts" />
+        <activity
+            android:name=".Activity.DiaryEditActivity"
+            android:label="@string/title_activity_diary_edit"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name="me.iwf.photopicker.PhotoPickerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="me.iwf.photopicker.PhotoPagerActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
