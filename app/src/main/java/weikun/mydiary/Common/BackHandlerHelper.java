@@ -1,4 +1,4 @@
-package weikun.mydiary;
+package weikun.mydiary.Common;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;

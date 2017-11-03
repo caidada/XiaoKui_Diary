@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Activity.DiaryEditActivity">
+
+    <item
+        android:id="@+id/action_text_size"
+        android:orderInCategory="100"
+        android:title="字体"
+        android:icon="@drawable/ic_text_size"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/action_insert_image"
+        android:orderInCategory="100"
+        android:title="图片"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_new_save"
+        android:orderInCategory="100"
+        android:title="保存"
+        app:showAsAction="always" />
+</menu>

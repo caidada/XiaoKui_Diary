@@ -1,20 +1,25 @@
 package weikun.mydiary.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
+
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import weikun.mydiary.BackHandlerHelper;
-import weikun.mydiary.BottomNavigationViewHelper;
+import weikun.mydiary.Common.BackHandlerHelper;
+import weikun.mydiary.Common.BottomNavigationViewHelper;
 import weikun.mydiary.Fragment.DiaryFragment;
 import weikun.mydiary.Fragment.MessageFragment;
 import weikun.mydiary.Fragment.SocialFragment;
@@ -146,5 +151,15 @@ public class MainActivity extends AppCompatActivity {
         mBeginTreansaction.commit();
         //把当前显示的fragment记录下来
         currentFragment = mFragments.get(currentIndex);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==1000) {
+            if(data!=null){
+
+            }
+        }
     }
 }

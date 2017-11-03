@@ -1,7 +1,6 @@
 package weikun.mydiary.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,12 +11,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import weikun.mydiary.Activity.DiaryActivity;
 import weikun.mydiary.R;
 import weikun.mydiary.db.Note;
 
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
+public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.ViewHolder>
         implements View.OnClickListener, View.OnLongClickListener{
 
     private Context mContext;
@@ -25,7 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private OnRecyclerViewItemClickListener mOnItemClickListener ;
     private OnRecyclerViewItemLongClickListener mOnItemLongClickListener ;
 
-    public RecyclerViewAdapter() {
+    public DiaryListAdapter() {
         mNotes = new ArrayList<>();
     }
 

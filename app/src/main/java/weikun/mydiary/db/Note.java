@@ -18,7 +18,10 @@ public class Note implements Serializable {
     private String groupName;//分类名称
     private int type;//笔记类型，1纯文本，2Html，3Markdown
     private String bgColor;//背景颜色，存储颜色代码
-    private int isEncrypt ;//是否加密，0未加密，1加密
+    private int isEncrypt;//是否加密，0未加密，1加密
+    private int isDraft;//是否加入草稿箱，0否，1是
+    private String Weather;//天气
+    private String Location;//地理位置
     private String createTime;//创建时间
     private String updateTime;//修改时间
 

@@ -1,4 +1,4 @@
-package weikun.mydiary;
+package weikun.mydiary.Common;
 
 /**
  * Created by Weikun on 2017/10/21.
